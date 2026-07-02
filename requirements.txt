@@ -1,0 +1,32 @@
+# API
+fastapi==0.115.0
+uvicorn==0.30.6
+python-dotenv==1.0.1
+
+# Base de datos
+sqlalchemy==2.0.36
+alembic==1.14.0
+psycopg2-binary==2.9.10
+
+# Autenticacion
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Celery
+celery==5.4.0
+redis==5.2.0
+
+# AI
+langchain==0.3.7
+langchain-groq==0.2.1
+
+# Email
+google-auth==2.36.0
+google-auth-oauthlib==1.2.1
+google-api-python-client==2.154.0
+msal==1.31.0
+
+# Utilidades
+pydantic-settings==2.6.1
+pydantic[email]==2.10.1
+httpx==0.28.0
