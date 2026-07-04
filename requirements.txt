@@ -11,6 +11,8 @@ psycopg2-binary==2.9.10
 # Autenticacion
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
+bcrypt==5.0.0
+pyjwt==2.10.1
 
 # Celery
 celery==5.4.0
