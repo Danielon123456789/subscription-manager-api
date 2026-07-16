@@ -7,6 +7,11 @@ class UserCreate(BaseModel):
     password: str = Field(min_length=8)
 
 
+class LoginData(BaseModel):
+    email: EmailStr
+    password: str = Field(max_length=255)
+
+
 class UserResponse(BaseModel):
     id: int
     email: str
