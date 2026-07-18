@@ -1,7 +1,7 @@
 from app.core.database import get_db
-from app.modules.auth.schemas import UserCreate, LoginData
-from app.modules.auth.service import register, login
-from app.modules.auth.schemas import RegisterResponse
+from app.modules.auth.schemas import UserCreate, LoginData, RefreshRequest
+from app.modules.auth.service import register, login, refresh
+from app.modules.auth.schemas import RegisterResponse, RefreshResponse
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
@@ -26,5 +26,14 @@ def login_endpoint(
     try:
         user_login = login(db, login_data=login_data)
         return user_login
+    except ValueError as e:
+        raise HTTPException(status_code=401, detail=str(e)) from e
+
+
+@router.post("/auth/refresh", status_code=200)
+def refresh_endpoint(refresh_data: RefreshRequest) -> RefreshResponse:
+    try:
+        refresh_response = refresh(refresh_data=refresh_data)
+        return refresh_response
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e)) from e
