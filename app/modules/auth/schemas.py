@@ -30,3 +30,12 @@ class TokenResponse(BaseModel):
 class RegisterResponse(BaseModel):
     user: UserResponse
     tokens: TokenResponse
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
+class RefreshResponse(BaseModel):
+    access_token: str
+    token_type: str

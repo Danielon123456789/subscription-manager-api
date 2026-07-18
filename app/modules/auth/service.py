@@ -3,6 +3,7 @@ from app.core.security import (
     create_access_token,
     create_refresh_token,
     verify_password,
+    decode_token,
 )
 from app.models.user import User
 from app.modules.auth.schemas import (
@@ -11,9 +12,12 @@ from app.modules.auth.schemas import (
     UserResponse,
     TokenResponse,
     RegisterResponse,
+    RefreshRequest,
+    RefreshResponse,
 )
 from app.modules.auth.repository import get_by_email, create
 from sqlalchemy.orm import Session
+import jwt
 
 
 def register(db: Session, user_data: UserCreate) -> RegisterResponse:
@@ -56,3 +60,22 @@ def login(db: Session, login_data: LoginData) -> RegisterResponse:
     register_response = RegisterResponse(user=user_response, tokens=token_response)
 
     return register_response
+
+
+def refresh(refresh_data: RefreshRequest) -> RefreshResponse:
+    try:
+        payload = decode_token(token=refresh_data.refresh_token)
+
+        if payload["type"] != "refresh":
+            raise ValueError("Tipo de token no valido")
+
+        access_token = create_access_token(user_id=int(payload["sub"]))
+
+        refresh_response = RefreshResponse(
+            access_token=access_token, token_type="bearer"
+        )
+
+        return refresh_response
+
+    except (jwt.PyJWTError, ValueError) as e:
+        raise ValueError("Token no valido") from e
