@@ -9,6 +9,12 @@ def get_by_email(db: Session, email: str) -> User | None:
     return result
 
 
+def get_by_id(db: Session, user_id: int) -> User | None:
+    stmt = select(User).where(User.id == user_id)
+    result = db.execute(stmt).scalar_one_or_none()
+    return result
+
+
 def create(db: Session, user: User) -> User:
     db.add(user)
     db.commit()
