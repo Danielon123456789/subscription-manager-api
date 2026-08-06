@@ -1,7 +1,14 @@
-from app.core.database import get_db, User
-from app.modules.auth.schemas import UserCreate, LoginData, RefreshRequest, UserResponse
+from app.core.database import get_db
+from app.models.user import User
+from app.modules.auth.schemas import (
+    UserCreate,
+    LoginData,
+    RefreshRequest,
+    UserResponse,
+    RegisterResponse,
+    RefreshResponse,
+)
 from app.modules.auth.service import register, login, refresh
-from app.modules.auth.schemas import RegisterResponse, RefreshResponse
 from app.modules.auth.dependencies import get_current_user
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
