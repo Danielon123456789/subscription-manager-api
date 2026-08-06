@@ -22,7 +22,7 @@ import jwt
 
 def register(db: Session, user_data: UserCreate) -> RegisterResponse:
     if get_by_email(db, user_data.email) is not None:
-        raise ValueError("El email ya esta registrado")
+        raise ValueError("Email already registered")
 
     hash_user = hash_password(user_data.password)
     user = User(email=user_data.email, password_hash=hash_user)
@@ -46,7 +46,7 @@ def login(db: Session, login_data: LoginData) -> RegisterResponse:
     user = get_by_email(db, login_data.email)
 
     if user is None or not verify_password(login_data.password, user.password_hash):
-        raise ValueError("Email o contraseña incorrectos")
+        raise ValueError("Invalid email or password")
 
     access_token = create_access_token(user_id=user.id)
     refresh_token = create_refresh_token(user_id=user.id)
@@ -67,7 +67,7 @@ def refresh(refresh_data: RefreshRequest) -> RefreshResponse:
         payload = decode_token(token=refresh_data.refresh_token)
 
         if payload["type"] != "refresh":
-            raise ValueError("Tipo de token no valido")
+            raise ValueError("Invalid token type")
 
         access_token = create_access_token(user_id=int(payload["sub"]))
 
@@ -78,4 +78,4 @@ def refresh(refresh_data: RefreshRequest) -> RefreshResponse:
         return refresh_response
 
     except (jwt.PyJWTError, ValueError) as e:
-        raise ValueError("Token no valido") from e
+        raise ValueError("Invalid token") from e
