@@ -41,6 +41,20 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  test:
+    build: .
+    profiles:
+      - test
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/subscription_manager_test
+    depends_on:
+      - db
+    command: pytest -v
+
   redis:
     image: redis:7
     ports:
