@@ -21,15 +21,14 @@ CYCLE_TO_RELATIVEDELTA_UNIT = {
 
 
 def calculate_next_billing_date(
-    start_date: date, billing_cycle: SubscriptionBillingCycle
+    start_date: date, billing_cycle: SubscriptionBillingCycle, reference_date: date
 ) -> date:
     unit = CYCLE_TO_RELATIVEDELTA_UNIT[billing_cycle]
-    today = date.today()
 
     cycles = 0
     next_date = start_date
 
-    while next_date < today:
+    while next_date < reference_date:
         cycles += 1
         next_date = start_date + relativedelta(**{unit: cycles})
 
@@ -59,6 +58,7 @@ def create_subscription(
     next_billing_date = calculate_next_billing_date(
         start_date=subscription_info.start_date,
         billing_cycle=subscription_info.billing_cycle,
+        reference_date=date.today(),
     )
 
     subscription = Subscription(
@@ -123,7 +123,9 @@ def update_subscription(
             "billing_cycle", subscription.billing_cycle
         )
         next_billing_date = calculate_next_billing_date(
-            start_date=start_date, billing_cycle=billing_cycle
+            start_date=start_date,
+            billing_cycle=billing_cycle,
+            reference_date=date.today(),
         )
         subscription_items["next_billing_date"] = next_billing_date
 
