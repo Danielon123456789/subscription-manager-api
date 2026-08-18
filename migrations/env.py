@@ -2,6 +2,13 @@ from logging.config import fileConfig
 from app.core.config import settings
 from app.core.database import Base
 
+# Imported for their side effect: registers the models in Base.metadata
+# so that --autogenerate can detect them. Do not remove.
+from app.models.user import User  # noqa: F401
+from app.models.subscription import Subscription  # noqa: F401
+from app.models.group import Group  # noqa: F401
+from app.models.group_member import GroupMember  # noqa: F401
+
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
