@@ -9,7 +9,7 @@ from app.modules.groups.exceptions import (
     GroupSelfTransferError,
     GroupOwnerMustTransferError,
 )
-from app.modules.groups.schemas import GroupUpdate
+from app.modules.groups.schemas import GroupUpdate, GroupCreate
 
 
 def validate_member(
@@ -30,10 +30,8 @@ def validate_member(
     return membership
 
 
-def create_group(
-    db: Session, user_id: int, name: str, description: str | None = None
-) -> Group:
-    group = Group(name=name, description=description)
+def create_group(db: Session, user_id: int, group_info: GroupCreate) -> Group:
+    group = Group(**group_info.model_dump())
     group_created = repository.create_group(db=db, group=group)
 
     repository.add_member(
@@ -137,4 +135,18 @@ def remove_member(
         )
 
     repository.remove_member(db=db, group_id=group_id, user_id=user_remove_id)
+    db.commit()
+
+
+def delete_group(db: Session, group_id: int, user_id: int) -> None:
+    validate_member(db=db, group_id=group_id, user_id=user_id, role=GroupRole.OWNER)
+
+    members = repository.get_members(db=db, group_id=group_id)
+
+    if len(members) > 1:
+        raise GroupOwnerMustTransferError(
+            "Owner must transfer ownership before deleting a group with other members"
+        )
+
+    repository.soft_delete_group(db=db, group_id=group_id)
     db.commit()
