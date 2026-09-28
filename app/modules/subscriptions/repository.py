@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, func
 from app.models.subscription import (
     Subscription,
     SubscriptionStatus,
@@ -65,6 +65,24 @@ def update(
     db.commit()
     db.refresh(subscription)
     return subscription
+
+
+def get_total_amount_by_owner(db: Session, owner_id: int) -> int:
+    stmt = select(func.sum(Subscription.amount)).where(
+        Subscription.owner_id == owner_id,
+        Subscription.status == SubscriptionStatus.ACTIVE,
+    )
+
+    return db.execute(stmt).scalar() or 0
+
+
+def get_total_amount_by_owners(db: Session, owner_ids: list[int]) -> int:
+    stmt = select(func.sum(Subscription.amount)).where(
+        Subscription.owner_id.in_(owner_ids),
+        Subscription.status == SubscriptionStatus.ACTIVE,
+    )
+
+    return db.execute(stmt).scalar() or 0
 
 
 def cancel_now(
