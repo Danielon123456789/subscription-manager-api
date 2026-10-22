@@ -4,7 +4,6 @@ from app.modules.auth.dependencies import get_current_user
 from app.modules.groups import service
 from app.modules.groups.schemas import (
     GroupCreate,
-    GroupAdd,
     GroupChangeOwner,
     GroupResponse,
     GroupUpdate,
@@ -60,29 +59,6 @@ def groups_update_endpoint(
         raise HTTPException(status_code=404, detail=str(e)) from e
     except InsufficientPermissionError as e:
         raise HTTPException(status_code=403, detail=str(e)) from e
-
-
-@router.post("/groups/{group_id}/invite", status_code=201)
-def groups_add_member_endpoint(
-    group_id: int,
-    member_info: GroupAdd,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
-) -> GroupMemberResponse:
-    try:
-        new_member = service.add_member(
-            db=db,
-            group_id=group_id,
-            user_id=current_user.id,
-            new_member_id=member_info.new_member_id,
-        )
-        return new_member
-    except exceptions.GroupNotFoundError as e:
-        raise HTTPException(status_code=404, detail=str(e)) from e
-    except InsufficientPermissionError as e:
-        raise HTTPException(status_code=403, detail=str(e)) from e
-    except exceptions.GroupAlreadyMemberError as e:
-        raise HTTPException(status_code=409, detail=str(e)) from e
 
 
 @router.post("/groups/{group_id}/transfer-owner", status_code=200)

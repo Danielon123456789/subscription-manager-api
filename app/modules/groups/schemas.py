@@ -13,10 +13,6 @@ class GroupCreate(BaseModel):
     description: str | None = None
 
 
-class GroupAdd(BaseModel):
-    new_member_id: int
-
-
 class GroupChangeOwner(BaseModel):
     new_owner_id: int
 
