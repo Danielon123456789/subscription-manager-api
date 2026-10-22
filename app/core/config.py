@@ -1,3 +1,4 @@
+from pydantic import SecretStr
 from pydantic_settings import BaseSettings
 
 
@@ -8,6 +9,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     REFRESH_TOKEN_EXPIRE_DAYS: int
     ENVIRONMENT: str
+    SMTP_API_KEY: SecretStr
+    SENDER_EMAIL: str
 
     class Config:
         env_file = ".env"
