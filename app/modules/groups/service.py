@@ -68,11 +68,9 @@ def update_group(
     return group
 
 
-def add_member(
-    db: Session, group_id: int, user_id: int, new_member_id: int
+def add_member_from_invitation(
+    db: Session, group_id: int, new_member_id: int
 ) -> GroupMember:
-    validate_member(db=db, group_id=group_id, user_id=user_id, role=GroupRole.OWNER)
-
     is_member = repository.get_membership(
         db=db, group_id=group_id, user_id=new_member_id
     )
