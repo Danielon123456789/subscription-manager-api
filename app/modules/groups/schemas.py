@@ -31,3 +31,9 @@ class GroupMemberResponse(BaseModel):
     group_id: int
     user_id: int
     role: GroupRole
+
+    model_config = {"from_attributes": True}
+
+
+class GroupByMemberResponse(GroupResponse):
+    role: GroupRole

@@ -3,18 +3,19 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, delete
 from app.models.group import Group
 from app.models.group_member import GroupMember, GroupRole
+from collections.abc import Sequence
 
 
-def get_groups_by_user(db: Session, user_id: int) -> list[Group]:
+def get_groups_by_user(db: Session, user_id: int) -> Sequence[tuple[Group, GroupRole]]:
     stmt = (
-        select(Group)
+        select(Group, GroupMember.role)
         .join(GroupMember, GroupMember.group_id == Group.id)
         .where(
             GroupMember.user_id == user_id,
             Group.deleted_at.is_(None),
         )
     )
-    result = db.execute(stmt).scalars().all()
+    result = db.execute(stmt).all()
     return result
 
 
@@ -39,7 +40,7 @@ def add_member(
     return member
 
 
-def get_members(db: Session, group_id: int) -> list[GroupMember]:
+def get_members(db: Session, group_id: int) -> Sequence[GroupMember]:
     stmt = select(GroupMember).where(GroupMember.group_id == group_id)
     result = db.execute(stmt).scalars().all()
     return result

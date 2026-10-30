@@ -8,6 +8,7 @@ from app.modules.groups.schemas import (
     GroupResponse,
     GroupUpdate,
     GroupMemberResponse,
+    GroupByMemberResponse,
 )
 from app.modules.groups import exceptions
 from app.core.exceptions import InsufficientPermissionError
@@ -41,6 +42,22 @@ def groups_by_id_endpoint(
         return group
     except exceptions.GroupNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
+
+
+@router.get("/groups", status_code=200)
+def groups_by_user_endpoint(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> list[GroupByMemberResponse]:
+    groups = service.get_groups(db=db, user_id=current_user.id)
+
+    return [
+        GroupByMemberResponse(
+            **GroupResponse.model_validate(group).model_dump(),
+            role=role,
+        )
+        for group, role in groups
+    ]
 
 
 @router.patch("/groups/{group_id}", status_code=200)
