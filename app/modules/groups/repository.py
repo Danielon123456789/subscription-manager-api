@@ -46,8 +46,14 @@ def get_members(db: Session, group_id: int) -> list[GroupMember]:
 
 
 def get_membership(db: Session, group_id: int, user_id: int) -> GroupMember | None:
-    stmt = select(GroupMember).where(
-        GroupMember.group_id == group_id, GroupMember.user_id == user_id
+    stmt = (
+        select(GroupMember)
+        .join(Group, GroupMember.group_id == Group.id)
+        .where(
+            GroupMember.group_id == group_id,
+            GroupMember.user_id == user_id,
+            Group.deleted_at.is_(None),
+        )
     )
     result = db.execute(stmt).scalar_one_or_none()
     return result
