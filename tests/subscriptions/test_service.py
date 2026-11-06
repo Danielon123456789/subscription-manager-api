@@ -34,7 +34,7 @@ def test_create_subscription_uses_owner_id_argument_not_payload(db_session):
         db=db_session, owner_id=user.id, subscription_info=payload
     )
 
-    assert result.next_billing_date.day == 31
+    assert result.owner_id == user.id
 
 
 def test_partial_update_does_not_overwrite_unsent_fields(db_session):

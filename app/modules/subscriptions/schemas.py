@@ -32,6 +32,7 @@ class SubscriptionUpdate(BaseModel):
 
 class SubscriptionResponse(BaseModel):
     id: int
+    owner_id: int
     name: str
     description: str | None = None
     amount: Decimal

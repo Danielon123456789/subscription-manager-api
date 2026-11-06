@@ -6,6 +6,7 @@ from app.models.subscription import (
 )
 from sqlalchemy.orm import Session
 from datetime import date
+from collections.abc import Sequence
 
 
 def create(db: Session, subscription: Subscription) -> Subscription:
@@ -23,6 +24,19 @@ def get_by_id(
         Subscription.owner_id == subscription_owner_id,
     )
     result = db.execute(stmt).scalar_one_or_none()
+    return result
+
+
+def get_by_owners(
+    db: Session,
+    owner_ids: list[int],
+) -> Sequence[Subscription]:
+    stmt = select(Subscription).where(
+        Subscription.owner_id.in_(owner_ids),
+    )
+
+    result = db.execute(stmt).scalars().all()
+
     return result
 
 

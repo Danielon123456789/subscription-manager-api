@@ -7,6 +7,7 @@ from app.models.subscription import (
     SubscriptionStatus,
     Subscription,
 )
+
 from app.modules.subscriptions.schemas import (
     SubscriptionCreate,
     SubscriptionResponse,
@@ -85,6 +86,20 @@ def get_subscription_by_id(
     subscription_response = SubscriptionResponse.model_validate(subscription)
 
     return subscription_response
+
+
+def get_subscriptions_by_owners(
+    db: Session,
+    owner_ids: list[int],
+) -> list[SubscriptionResponse]:
+    subscriptions_list = repository.get_by_owners(db=db, owner_ids=owner_ids)
+
+    subscriptions_response_list = [
+        SubscriptionResponse.model_validate(subscription)
+        for subscription in subscriptions_list
+    ]
+
+    return subscriptions_response_list
 
 
 def get_subscriptions_by_owner(
