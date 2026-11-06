@@ -10,6 +10,7 @@ from app.modules.groups.schemas import (
     GroupMemberResponse,
     GroupByMemberResponse,
 )
+from app.modules.subscriptions.schemas import SubscriptionResponse
 from app.modules.groups import exceptions
 from app.core.exceptions import InsufficientPermissionError
 
@@ -40,6 +41,21 @@ def groups_by_id_endpoint(
     try:
         group = service.get_group(db=db, group_id=group_id, user_id=current_user.id)
         return group
+    except exceptions.GroupNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+
+
+@router.get("/groups/{group_id}/subscriptions", status_code=200)
+def group_subscriptions_endpoint(
+    group_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> list[SubscriptionResponse]:
+    try:
+        group_subscriptions = service.get_group_subscriptions(
+            db=db, group_id=group_id, user_id=current_user.id
+        )
+        return group_subscriptions
     except exceptions.GroupNotFoundError as e:
         raise HTTPException(status_code=404, detail=str(e)) from e
 

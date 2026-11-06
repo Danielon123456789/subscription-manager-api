@@ -9,6 +9,8 @@ from app.modules.groups.exceptions import (
     GroupSelfTransferError,
     GroupOwnerMustTransferError,
 )
+from app.modules.subscriptions.schemas import SubscriptionResponse
+from app.modules.subscriptions.service import get_subscriptions_by_owners
 from collections.abc import Sequence
 from app.modules.groups.schemas import GroupUpdate, GroupCreate
 
@@ -55,6 +57,20 @@ def get_group(db: Session, group_id: int, user_id: int) -> Group:
 def get_groups(db: Session, user_id: int) -> Sequence[tuple[Group, GroupRole]]:
     groups = repository.get_groups_by_user(db=db, user_id=user_id)
     return groups
+
+
+def get_group_subscriptions(
+    db: Session, group_id: int, user_id: int
+) -> list[SubscriptionResponse]:
+    validate_member(db=db, group_id=group_id, user_id=user_id)
+
+    members = repository.get_members(db=db, group_id=group_id)
+
+    members_ids = [member.user_id for member in members]
+
+    subscriptions = get_subscriptions_by_owners(db=db, owner_ids=members_ids)
+
+    return subscriptions
 
 
 def update_group(
