@@ -9,6 +9,7 @@ from app.modules.auth.schemas import (
     RefreshResponse,
 )
 from app.modules.auth.service import register, login, refresh
+from app.modules.auth import exceptions
 from app.modules.auth.dependencies import get_current_user
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -23,7 +24,7 @@ def register_endpoint(
     try:
         user_register = register(db, user_data=user_data)
         return user_register
-    except ValueError as e:
+    except exceptions.EmailAlreadyRegisteredError as e:
         raise HTTPException(status_code=409, detail=str(e)) from e
 
 

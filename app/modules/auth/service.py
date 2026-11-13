@@ -15,6 +15,7 @@ from app.modules.auth.schemas import (
     RefreshRequest,
     RefreshResponse,
 )
+from app.modules.auth import exceptions
 from app.modules.auth.repository import get_by_email, create
 from sqlalchemy.orm import Session
 import jwt
@@ -22,7 +23,7 @@ import jwt
 
 def register(db: Session, user_data: UserCreate) -> RegisterResponse:
     if get_by_email(db, user_data.email) is not None:
-        raise ValueError("Email already registered")
+        raise exceptions.EmailAlreadyRegisteredError("Email already registered")
 
     hash_user = hash_password(user_data.password)
     user = User(email=user_data.email, password_hash=hash_user)

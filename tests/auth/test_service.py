@@ -1,5 +1,6 @@
 from app.modules.auth.schemas import UserCreate, LoginData
 from app.modules.auth.service import register, login
+from app.modules.auth import exceptions
 import pytest
 
 
@@ -8,7 +9,7 @@ def test_register_rejects_duplicate_email(db_session):
 
     register(db=db_session, user_data=payload)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(exceptions.EmailAlreadyRegisteredError):
         register(db=db_session, user_data=payload)
 
 
